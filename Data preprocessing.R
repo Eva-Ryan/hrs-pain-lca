@@ -5,12 +5,11 @@
 library(tidyverse)
 library(haven)
 
-# get location of project directory
-directory <- getwd()
-
-
 #--------------------------------
 # LOAD DATA AND MERGE
+
+# get location of project directory
+directory <- getwd()
 
 # load data from 2016 RAND fatfile
 rand16 <- read_dta(paste0(directory, "/RAND data/h16f2c.dta"))
@@ -143,42 +142,42 @@ summary(as.factor(df$backPain))
 # recode pain values
 df <- df %>%
   # 1 = yes, 0 = no, otherwise NA
-  mutate(troubledWithPain = factor(car::recode(troubledWithPain,
-                                               "1 = 1;
-                                               5 = 0;
-                                               8 = NA;
-                                               9 = NA"))) %>%
+  mutate(troubledWithPain = car::recode(troubledWithPain,
+                                        "1 = 1;
+                                        5 = 0;
+                                        8 = NA;
+                                        9 = NA")) %>%
   # 1 = mild, 2 = moderate, 3 = severe, otherwise NA
-  mutate(painUsualSeverity = factor(car::recode(painUsualSeverity,
-                                                "1 = 1;
-                                                2 = 2;
-                                                3 = 3;
-                                                8 = NA;
-                                                9 = NA"))) %>%
+  mutate(painUsualSeverity = car::recode(painUsualSeverity,
+                                         "1 = 1;
+                                         2 = 2;
+                                         3 = 3;
+                                         8 = NA;
+                                         9 = NA")) %>%
   # 1 = yes, 0 = no, otherwise NA
-  mutate(painPreventActivity = factor(car::recode(painPreventActivity,
-                                                  "1 = 1;
-                                                  5 = 0;
-                                                  8 = NA;
-                                                  9 = NA"))) %>%
+  mutate(painPreventActivity = car::recode(painPreventActivity,
+                                           "1 = 1;
+                                           5 = 0;
+                                           8 = NA;
+                                           9 = NA")) %>%
   # 1 = yes, 0 = no, otherwise NA
-  mutate(painMeds = factor(car::recode(painMeds,
-                                       "1 = 1;
-                                       5 = 0;
-                                       8 = NA;
-                                       9 = NA"))) %>%
+  mutate(painMeds = car::recode(painMeds,
+                                "1 = 1;
+                                5 = 0;
+                                8 = NA;
+                                9 = NA")) %>%
   # 1 = yes, 0 = no, otherwise NA
-  mutate(painOpioids = factor(car::recode(painOpioids,
-                                          "1 = 1;
-                                          5 = 0;
-                                          8 = NA;
-                                          9 = NA"))) %>%
+  mutate(painOpioids = car::recode(painOpioids,
+                                   "1 = 1;
+                                   5 = 0;
+                                   8 = NA;
+                                   9 = NA")) %>%
   # 1 = yes, 0 = no, otherwise NA
-  mutate(backPain = factor(car::recode(backPain,
-                                       "1 = 1;
-                                       5 = 0;
-                                       8 = NA;
-                                       9 = NA")))
+  mutate(backPain = car::recode(backPain,
+                                "1 = 1;
+                                5 = 0;
+                                8 = NA;
+                                9 = NA"))
 
 # make new pain level variable with 0 = no pain, 1 = mild pain,
 # 2 = moderate pain, 3 = severe pain
@@ -194,11 +193,8 @@ summary(as.factor(df$painLevel))
 # participants who reported no pain
 df <- df %>%
   mutate(painDisability = ifelse(troubledWithPain == 0,
-                            0,
-                            painPreventActivity)) %>%
-  mutate(painDisability = car::recode(painDisability,
-                                      "1 = 0;
-                                      2 = 1"))
+                                 0,
+                                 painPreventActivity))
 
 # check the new variable
 summary(as.factor(df$painDisability))
