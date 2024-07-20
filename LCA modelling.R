@@ -4,6 +4,8 @@
 # load packages
 library(tidyverse)
 library(poLCA)
+library(tictoc)
+library(beepr)
 
 #--------------------------------
 # PREPARE DATA
@@ -20,21 +22,21 @@ df <- df %>%
                                        "Black (non-Hispanic)",
                                        "Hispanic",
                                        "Other (non-Hispanic)"))) %>%
-  mutate(edu4Cats = ordered(edu4Cats, levels = c(1, 2, 3, 4),
+  mutate(edu4Cats = ordered(edu4Cats, levels = c(1,2,3,4),
                             labels = c("No degree", "High school degree",
                                        "4-year college degree",
                                        "Graduate degree"))) %>%
-  mutate(painLevel = ordered(painLevel, levels = c(0,1,2,3),
+  mutate(painLevel = ordered(painLevel, levels = c(1,2,3,4),
                              labels = c("no", "mild", "moderate",
                                         "severe"))) %>%
-  mutate(painDisability = factor(painDisability, levels = c(0,1),
-                                 labels = c("no", "yes"))) %>%
-  mutate(painMeds = factor(painMeds, levels = c(0,1),
-                           labels = c("no", "yes"))) %>%
-  mutate(painOpioids = factor(painOpioids, levels = c(0,1),
-                              labels = c("no", "yes"))) %>%
-  mutate(backPain = factor(backPain, levels = c(0,1),
-                           labels = c("no", "yes")))
+  mutate(painDisability = factor(painDisability, levels = c(1,2),
+                                 labels = c("yes", "no"))) %>%
+  mutate(painMeds = factor(painMeds, levels = c(1,2),
+                           labels = c("yes", "no"))) %>%
+  mutate(painOpioids = factor(painOpioids, levels = c(1,2),
+                              labels = c("yes", "no"))) %>%
+  mutate(backPain = factor(backPain, levels = c(1,2),
+                           labels = c("yes", "no")))
 
 # data summary
 summary(df)
@@ -67,4 +69,39 @@ df_cc <- df %>%
 #--------------------------------
 # FIT LCA MODELS
 
+# calculate models with 1-6 classes with NA values retained
 
+tic()
+
+set.seed(6049)
+m1 <- poLCA(cbind(painLevel, painDisability, painMeds, painOpioids, backPain)~1,
+            data = df, nclass = 1, maxiter = 1000, graphs = TRUE, tol = 1e-10,
+            na.rm = FALSE, nrep = 100, verbose = FALSE, calc.se = TRUE)
+
+set.seed(6049)
+m2 <- poLCA(cbind(painLevel, painDisability, painMeds, painOpioids, backPain)~1,
+            data = df, nclass = 2, maxiter = 1000, graphs = TRUE, tol = 1e-10,
+            na.rm = FALSE, nrep = 100, verbose = FALSE, calc.se = TRUE)
+
+set.seed(6049)
+m3 <- poLCA(cbind(painLevel, painDisability, painMeds, painOpioids, backPain)~1,
+            data = df, nclass = 3, maxiter = 1000, graphs = TRUE, tol = 1e-10,
+            na.rm = FALSE, nrep = 100, verbose = FALSE, calc.se = TRUE)
+
+set.seed(6049)
+m4 <- poLCA(cbind(painLevel, painDisability, painMeds, painOpioids, backPain)~1,
+            data = df, nclass = 4, maxiter = 1000, graphs = TRUE, tol = 1e-10,
+            na.rm = FALSE, nrep = 100, verbose = FALSE, calc.se = TRUE)
+
+set.seed(6049)
+m5 <- poLCA(cbind(painLevel, painDisability, painMeds, painOpioids, backPain)~1,
+            data = df, nclass = 5, maxiter = 1000, graphs = TRUE, tol = 1e-10,
+            na.rm = FALSE, nrep = 100, verbose = FALSE, calc.se = TRUE)
+
+set.seed(6049)
+m6 <- poLCA(cbind(painLevel, painDisability, painMeds, painOpioids, backPain)~1,
+            data = df, nclass = 6, maxiter = 1000, graphs = TRUE, tol = 1e-10,
+            na.rm = FALSE, nrep = 100, verbose = FALSE, calc.se = TRUE)
+
+toc()
+beep()
