@@ -85,7 +85,7 @@ summary(as.factor(df$race))
 df <- df %>%
   # pool type-unknown, Mexican, and other Hispanic (0-2)
   mutate(hispTemp = car::recode(hispanic,
-                                 "0 = NA;
+                                "0 = NA;
                                  1 = 1;
                                  2 = 1;
                                  3 = 1;
@@ -101,6 +101,9 @@ df <- df %>%
 
 # add Hispanic
 df$race4Cats[df$hispTemp == 1] <- 3
+
+# check race variable
+summary(as.factor(df$race4Cats))
 
 # check education variable
 summary(as.factor(df$degree))
@@ -126,8 +129,79 @@ df <- df %>%
 
 # select just those aged 51+ in 2016 who do not have zero weights
 df <- df %>%
-  filter(age >= 51) %>%
-  filter(sample_wgt != 0)
+  filter(age >= 51) %>% # 20912 - 19929 = 983 removed
+  filter(sample_wgt != 0) # 19929 - 19623 = 306 removed
+
+# check pain variables
+summary(as.factor(df$troubledWithPain))
+summary(as.factor(df$painUsualSeverity))
+summary(as.factor(df$painPreventActivity))
+summary(as.factor(df$painMeds))
+summary(as.factor(df$painOpioids))
+summary(as.factor(df$backPain))
+
+# recode pain values
+df <- df %>%
+  # 1 = yes, 0 = no, otherwise NA
+  mutate(troubledWithPain = factor(car::recode(troubledWithPain,
+                                               "1 = 1;
+                                               5 = 0;
+                                               8 = NA;
+                                               9 = NA"))) %>%
+  # 1 = mild, 2 = moderate, 3 = severe, otherwise NA
+  mutate(painUsualSeverity = factor(car::recode(painUsualSeverity,
+                                                "1 = 1;
+                                                2 = 2;
+                                                3 = 3;
+                                                8 = NA;
+                                                9 = NA"))) %>%
+  # 1 = yes, 0 = no, otherwise NA
+  mutate(painPreventActivity = factor(car::recode(painPreventActivity,
+                                                  "1 = 1;
+                                                  5 = 0;
+                                                  8 = NA;
+                                                  9 = NA"))) %>%
+  # 1 = yes, 0 = no, otherwise NA
+  mutate(painMeds = factor(car::recode(painMeds,
+                                       "1 = 1;
+                                       5 = 0;
+                                       8 = NA;
+                                       9 = NA"))) %>%
+  # 1 = yes, 0 = no, otherwise NA
+  mutate(painOpioids = factor(car::recode(painOpioids,
+                                          "1 = 1;
+                                          5 = 0;
+                                          8 = NA;
+                                          9 = NA"))) %>%
+  # 1 = yes, 0 = no, otherwise NA
+  mutate(backPain = factor(car::recode(backPain,
+                                       "1 = 1;
+                                       5 = 0;
+                                       8 = NA;
+                                       9 = NA")))
+
+# make new pain level variable with 0 = no pain, 1 = mild pain,
+# 2 = moderate pain, 3 = severe pain
+df <- df %>%
+  mutate(painLevel = ifelse(troubledWithPain == 0,
+                            0,
+                            painUsualSeverity))
+
+# check new variable
+summary(as.factor(df$painLevel))
+
+# recode pain prevents activity variable to be 0 (no) instead of NA for
+# participants who reported no pain
+df <- df %>%
+  mutate(painDisability = ifelse(troubledWithPain == 0,
+                            0,
+                            painPreventActivity)) %>%
+  mutate(painDisability = car::recode(painDisability,
+                                      "1 = 0;
+                                      2 = 1"))
+
+# check the new variable
+summary(as.factor(df$painDisability))
 
 
 #--------------------------------
