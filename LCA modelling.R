@@ -105,3 +105,86 @@ m6 <- poLCA(cbind(painLevel, painDisability, painMeds, painOpioids, backPain)~1,
 
 toc()
 beep()
+
+# create vectors of fit statistics
+AICs <- c(m1$aic, m2$aic, m3$aic, m4$aic, m5$aic, m6$aic)
+BICs <- c(m1$bic, m2$bic, m3$bic, m4$bic, m5$bic, m6$bic)
+
+#------------------------
+# calculate NFI and NNFI
+
+# calculate degrees of freedom for each model using the formula df = nz − P − 1,
+# where nz = # of cells in contingency table and P = number of parameters
+# estimated for the model
+nz <- 4*2*2*2*2
+degfree <- c(nz - m1$npar - 1,
+             nz - m2$npar - 1,
+             nz - m3$npar - 1,
+             nz - m4$npar - 1,
+             nz - m5$npar - 1,
+             nz - m6$npar - 1)
+
+NFIs <- c(NA,
+          (m1$Gsq - m2$Gsq)/m1$Gsq,
+          (m1$Gsq - m3$Gsq)/m1$Gsq,
+          (m1$Gsq - m4$Gsq)/m1$Gsq,
+          (m1$Gsq - m5$Gsq)/m1$Gsq,
+          (m1$Gsq - m6$Gsq)/m1$Gsq)
+
+NNFIs <- c(NA,
+           ((m1$Gsq/degfree[1]) - (m2$Gsq/degfree[2]))/((m1$Gsq/degfree[1]) - 1),
+           ((m1$Gsq/degfree[1]) - (m3$Gsq/degfree[3]))/((m1$Gsq/degfree[1]) - 1),
+           ((m1$Gsq/degfree[1]) - (m4$Gsq/degfree[4]))/((m1$Gsq/degfree[1]) - 1),
+           ((m1$Gsq/degfree[1]) - (m5$Gsq/degfree[5]))/((m1$Gsq/degfree[1]) - 1),
+           ((m1$Gsq/degfree[1]) - (m6$Gsq/degfree[6]))/((m1$Gsq/degfree[1]) - 1))
+
+# merge all into one dataframe
+indices <- cbind(1:6, AICs, BICs, NFIs, NNFIs) %>% as.data.frame()
+names(indices) <- c("classes", "aic", "bic", "nfi", "nnfi")
+
+#---------------------
+# plot the fit indices
+
+# AIC
+aic_plot <- ggplot(indices, aes(x = classes, y = aic)) +
+  geom_line(linewidth = 1, color = "red") +
+  geom_point(shape = 21, size = 2, fill = "red") +
+  theme_light() +
+  xlab("Number of classes") + ylab("AIC") +
+  ggtitle("AIC plot") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_x_continuous(breaks = c(1:6))
+aic_plot
+
+# BIC
+bic_plot <- ggplot(indices, aes(x = classes, y = bic)) +
+  geom_line(linewidth = 1, color = "red") +
+  geom_point(shape = 21, size = 2, fill = "red") +
+  theme_light() +
+  xlab("Number of classes") + ylab("BIC") +
+  ggtitle("BIC plot") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_x_continuous(breaks = c(1:6))
+bic_plot
+
+# NFI
+nfi_plot <- ggplot(indices[-1,], aes(x = classes, y = nfi)) +
+  geom_line(linewidth = 1, color = "red") +
+  geom_point(shape = 21, size = 2, fill = "red") +
+  theme_light() +
+  xlab("Number of classes") + ylab("NFI") +
+  ggtitle("NFI plot") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_x_continuous(breaks = c(2:6))
+nfi_plot
+
+# NFI
+nnfi_plot <- ggplot(indices[-1,], aes(x = classes, y = nnfi)) +
+  geom_line(linewidth = 1, color = "red") +
+  geom_point(shape = 21, size = 2, fill = "red") +
+  theme_light() +
+  xlab("Number of classes") + ylab("NNFI") +
+  ggtitle("NNFI plot") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_x_continuous(breaks = c(2:6))
+nnfi_plot
