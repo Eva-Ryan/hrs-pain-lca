@@ -6,6 +6,9 @@ library(tidyverse)
 library(poLCA)
 library(tictoc)
 library(beepr)
+library(gridExtra)
+library(grid)
+library(ggpubr)
 
 #--------------------------------
 # PREPARE DATA
@@ -22,11 +25,11 @@ df <- df %>%
                                        "Black (non-Hispanic)",
                                        "Hispanic",
                                        "Other (non-Hispanic)"))) %>%
-  mutate(edu4Cats = ordered(edu4Cats, levels = c(1,2,3,4),
+  mutate(edu4Cats =  factor(edu4Cats, levels = c(1,2,3,4),
                             labels = c("No degree", "High school degree",
                                        "4-year college degree",
                                        "Graduate degree"))) %>%
-  mutate(painLevel = ordered(painLevel, levels = c(1,2,3,4),
+  mutate(painLevel =  factor(painLevel, levels = c(1,2,3,4),
                              labels = c("no", "mild", "moderate",
                                         "severe"))) %>%
   mutate(painDisability = factor(painDisability, levels = c(1,2),
@@ -64,44 +67,50 @@ df_cc <- df %>%
   filter(is.na(painLevel) == FALSE & is.na(painDisability) == FALSE &
            is.na(painMeds) == FALSE & is.na(painOpioids) == FALSE &
            is.na(backPain) == FALSE) # 19623 - 19048 = 575 participants removed
+                                     # (2.93%)
 
+# save complete cases df
+write_csv(df_cc, "HRS_2016_pain_cc.csv")
 
 #--------------------------------
 # FIT LCA MODELS
+
+# specify indicator variables
+f1 <- as.formula(cbind(painLevel, painDisability, painMeds, painOpioids, backPain)~1)
 
 # calculate models with 1-6 classes with NA values retained
 
 tic()
 
 set.seed(6049)
-m1 <- poLCA(cbind(painLevel, painDisability, painMeds, painOpioids, backPain)~1,
-            data = df, nclass = 1, maxiter = 1000, graphs = TRUE, tol = 1e-10,
-            na.rm = FALSE, nrep = 100, verbose = FALSE, calc.se = TRUE)
+m1 <- poLCA(f1,
+            data = df, nclass = 1, maxiter = 1000, graphs = FALSE, tol = 1e-10,
+            na.rm = FALSE, nrep = 100, verbose = TRUE, calc.se = TRUE)
 
 set.seed(6049)
-m2 <- poLCA(cbind(painLevel, painDisability, painMeds, painOpioids, backPain)~1,
-            data = df, nclass = 2, maxiter = 1000, graphs = TRUE, tol = 1e-10,
-            na.rm = FALSE, nrep = 100, verbose = FALSE, calc.se = TRUE)
+m2 <- poLCA(f1,
+            data = df, nclass = 2, maxiter = 1000, graphs = FALSE, tol = 1e-10,
+            na.rm = FALSE, nrep = 100, verbose = TRUE, calc.se = TRUE)
 
 set.seed(6049)
-m3 <- poLCA(cbind(painLevel, painDisability, painMeds, painOpioids, backPain)~1,
-            data = df, nclass = 3, maxiter = 1000, graphs = TRUE, tol = 1e-10,
-            na.rm = FALSE, nrep = 100, verbose = FALSE, calc.se = TRUE)
+m3 <- poLCA(f1,
+            data = df, nclass = 3, maxiter = 1000, graphs = FALSE, tol = 1e-10,
+            na.rm = FALSE, nrep = 100, verbose = TRUE, calc.se = TRUE)
 
 set.seed(6049)
-m4 <- poLCA(cbind(painLevel, painDisability, painMeds, painOpioids, backPain)~1,
-            data = df, nclass = 4, maxiter = 1000, graphs = TRUE, tol = 1e-10,
-            na.rm = FALSE, nrep = 100, verbose = FALSE, calc.se = TRUE)
+m4 <- poLCA(f1,
+            data = df, nclass = 4, maxiter = 1000, graphs = FALSE, tol = 1e-10,
+            na.rm = FALSE, nrep = 100, verbose = TRUE, calc.se = TRUE)
 
 set.seed(6049)
-m5 <- poLCA(cbind(painLevel, painDisability, painMeds, painOpioids, backPain)~1,
-            data = df, nclass = 5, maxiter = 1000, graphs = TRUE, tol = 1e-10,
-            na.rm = FALSE, nrep = 100, verbose = FALSE, calc.se = TRUE)
+m5 <- poLCA(f1,
+            data = df, nclass = 5, maxiter = 1000, graphs = FALSE, tol = 1e-10,
+            na.rm = FALSE, nrep = 100, verbose = TRUE, calc.se = TRUE)
 
 set.seed(6049)
-m6 <- poLCA(cbind(painLevel, painDisability, painMeds, painOpioids, backPain)~1,
-            data = df, nclass = 6, maxiter = 1000, graphs = TRUE, tol = 1e-10,
-            na.rm = FALSE, nrep = 100, verbose = FALSE, calc.se = TRUE)
+m6 <- poLCA(f1,
+            data = df, nclass = 6, maxiter = 1000, graphs = FALSE, tol = 1e-10,
+            na.rm = FALSE, nrep = 100, verbose = TRUE, calc.se = TRUE)
 
 toc()
 beep()
@@ -116,7 +125,9 @@ BICs <- c(m1$bic, m2$bic, m3$bic, m4$bic, m5$bic, m6$bic)
 # calculate degrees of freedom for each model using the formula df = nz − P − 1,
 # where nz = # of cells in contingency table and P = number of parameters
 # estimated for the model
-nz <- 4*2*2*2*2
+nz <- 4*2*2*2*2 # incl all possible pain indicator variables
+#nz <- 4*2*2*2 # NOT incl back pain or NOT including pain disability
+
 degfree <- c(nz - m1$npar - 1,
              nz - m2$npar - 1,
              nz - m3$npar - 1,
@@ -142,8 +153,8 @@ NNFIs <- c(NA,
 indices <- cbind(1:6, AICs, BICs, NFIs, NNFIs) %>% as.data.frame()
 names(indices) <- c("classes", "aic", "bic", "nfi", "nnfi")
 
-#---------------------
-# plot the fit indices
+#--------------------------------
+# PLOT THE FIT INDICES
 
 # AIC
 aic_plot <- ggplot(indices, aes(x = classes, y = aic)) +
@@ -188,3 +199,21 @@ nnfi_plot <- ggplot(indices[-1,], aes(x = classes, y = nnfi)) +
   theme(plot.title = element_text(hjust = 0.5)) +
   scale_x_continuous(breaks = c(2:6))
 nnfi_plot
+
+# put the plots together
+## combine all plots together into one figure
+plot_grid <- grid.arrange(
+  aic_plot, bic_plot, nfi_plot, nnfi_plot,
+  ncol = 2, nrow = 2,
+  top = text_grob("Fit Criteria Plots",
+                  size = 15))
+
+# save the combined plot
+ggsave(
+  filename = paste0(getwd(), "/Results - poLCA/All_plots_all_indicators.jpg"),
+  plot = plot_grid,
+  units = "in",
+  width = 10,
+  height = 10,
+  dpi = 1000
+)
