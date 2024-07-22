@@ -67,7 +67,7 @@ df_cc <- df %>%
   filter(is.na(painLevel) == FALSE & is.na(painDisability) == FALSE &
            is.na(painMeds) == FALSE & is.na(painOpioids) == FALSE &
            is.na(backPain) == FALSE) # 19623 - 19048 = 575 participants removed
-                                     # (2.93%)
+# (2.93%)
 
 # save complete cases df
 write_csv(df_cc, "HRS_2016_pain_cc.csv")
@@ -231,10 +231,10 @@ parameters.fun <- function(model, nclass, cats){
   # create dataframe to store class membership probabilities and item response
   # probabilities for each class
   para.df <- as.data.frame(matrix(NA, nrow = nclass*length(cats), ncol = 4))
-  names(para.df) <- c("class", "classP", "item", "itemResponseP")
+  names(para.df) <- c("Class", "classP", "item", "itemResponseP")
 
   # add class number and class membership probability for each class
-  para.df$class <- rep(1:nclass, each = length(cats))
+  para.df$Class <- rep(1:nclass, each = length(cats))
   para.df$classP <- rep(round(model$P,3), each = length(cats))
   para.df$item <- rep(cats, times = nclass)
 
@@ -250,15 +250,20 @@ parameters.fun <- function(model, nclass, cats){
     para.df$itemResponseP[ind+6] <- round(model$probs$backPain[i, 1],3)
   }
 
+  # make class and class membership prob. variable for plot legend
+  para.df <- para.df %>%
+    mutate(`Class (prob.)` = paste0(Class, " (", classP, ")")) %>%
+    mutate(`Class (prob.)` = as.factor(`Class (prob.)`))
+
   # return the df of parameter values
   return(para.df)
 }
 
 # specify categories
-categories <- c("painLevel_Mild", "painLevel_Moderate", "painLevel_Severe",
-                "painDisability_Yes", "painMeds_Yes", "painOpioids_Yes",
-                "backPain_Yes"
-                )
+categories <- c("Mild pain", "Moderate pain", "Severe pain",
+                "Disabling pain", "Takes meds (OTC)", "Takes opioids",
+                "Back pain"
+)
 
 # apply to the various candidate models
 m2_parameters <- parameters.fun(m2, 2, categories)
@@ -277,5 +282,83 @@ m6_parameters <- parameters.fun(m6, 6, categories)
 # create plots for each model
 
 # 2 class model
+plot_2classes <- m2_parameters %>%
+  ggplot(aes(x = item, y = itemResponseP)) +
+  geom_line(aes(color = `Class (prob.)`, group = `Class (prob.)`)) +
+  geom_point(aes(shape = `Class (prob.)`, color = `Class (prob.)`,
+                 group = `Class (prob.)`)) +
+  theme_light() +
+  #xlab("Item responses") + ylab("Item response probabilities") +
+  xlab("") + ylab("") +
+  ggtitle("2 class LCA model") +
+  theme(plot.title = element_text(hjust = 0.5))
 
+# 3 class model
+plot_3classes <- m3_parameters %>%
+  ggplot(aes(x = item, y = itemResponseP)) +
+  geom_line(aes(color = `Class (prob.)`, group = `Class (prob.)`)) +
+  geom_point(aes(shape = `Class (prob.)`, color = `Class (prob.)`,
+                 group = `Class (prob.)`)) +
+  theme_light() +
+  #xlab("Item responses") + ylab("Item response probabilities") +
+  xlab("") + ylab("") +
+  ggtitle("3 class LCA model") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# 4 class model
+plot_4classes <- m4_parameters %>%
+  ggplot(aes(x = item, y = itemResponseP)) +
+  geom_line(aes(color = `Class (prob.)`, group = `Class (prob.)`)) +
+  geom_point(aes(shape = `Class (prob.)`, color = `Class (prob.)`,
+                 group = `Class (prob.)`)) +
+  theme_light() +
+  #xlab("Item responses") + ylab("Item response probabilities") +
+  xlab("") + ylab("") +
+  ggtitle("4 class LCA model") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# 5 class model
+plot_5classes <- m5_parameters %>%
+  ggplot(aes(x = item, y = itemResponseP)) +
+  geom_line(aes(color = `Class (prob.)`, group = `Class (prob.)`)) +
+  geom_point(aes(shape = `Class (prob.)`, color = `Class (prob.)`,
+                 group = `Class (prob.)`)) +
+  theme_light() +
+  #xlab("Item responses") + ylab("Item response probabilities") +
+  xlab("") + ylab("") +
+  ggtitle("5 class LCA model") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# 6 class model
+plot_6classes <- m6_parameters %>%
+  ggplot(aes(x = item, y = itemResponseP)) +
+  geom_line(aes(color = `Class (prob.)`, group = `Class (prob.)`)) +
+  geom_point(aes(shape = `Class (prob.)`, color = `Class (prob.)`,
+                 group = `Class (prob.)`)) +
+  theme_light() +
+  #xlab("Item responses") + ylab("Item response probabilities") +
+  xlab("") + ylab("") +
+  ggtitle("6 class LCA model") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# put the plots together
+## combine all plots together into one figure
+parameters_plot_grid <- grid.arrange(
+  plot_2classes, plot_3classes, plot_4classes, plot_5classes, plot_6classes,
+  ncol = 1, nrow = 5,
+  top = text_grob("Conditional item probability plots for candidate models",
+                  size = 15),
+  bottom = textGrob("Items"),
+  left = textGrob("Item response probabilities", rot=90))
+
+
+# save the combined plot
+ggsave(
+  filename = paste0(getwd(), "/Results - poLCA/item_probability_plots_all_indicators.jpg"),
+  plot = parameters_plot_grid,
+  units = "in",
+  width = 12,
+  height = 15,
+  dpi = 1000
+)
 
