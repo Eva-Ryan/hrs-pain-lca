@@ -217,3 +217,65 @@ ggsave(
   height = 10,
   dpi = 1000
 )
+
+
+#--------------------------------
+# PLOT THE LCA MODEL PARAMETERS
+
+# create function to extract model parameters from LCA model objects
+parameters.fun <- function(model, nclass, cats){
+  # Inputs: model = poLCA object
+  #         nclass = number of classes in the fitted LCA model
+  #         cats = item categories to plot response probabilities for
+
+  # create dataframe to store class membership probabilities and item response
+  # probabilities for each class
+  para.df <- as.data.frame(matrix(NA, nrow = nclass*length(cats), ncol = 4))
+  names(para.df) <- c("class", "classP", "item", "itemResponseP")
+
+  # add class number and class membership probability for each class
+  para.df$class <- rep(1:nclass, each = length(cats))
+  para.df$classP <- rep(round(model$P,3), each = length(cats))
+  para.df$item <- rep(cats, times = nclass)
+
+  # cycle through classes adding item response probabilities
+  for(i in 1:nclass){
+    # row index to start on
+    ind <- length(cats)*(i-1) + 1
+    # add item response probabilities for each item
+    para.df$itemResponseP[ind:(ind+2)] <- round(model$probs$painLevel[i,2:4],3)
+    para.df$itemResponseP[ind+3] <- round(model$probs$painDisability[i, 1],3)
+    para.df$itemResponseP[ind+4] <- round(model$probs$painMeds[i, 1],3)
+    para.df$itemResponseP[ind+5] <- round(model$probs$painOpioids[i, 1],3)
+    para.df$itemResponseP[ind+6] <- round(model$probs$backPain[i, 1],3)
+  }
+
+  # return the df of parameter values
+  return(para.df)
+}
+
+# specify categories
+categories <- c("painLevel_Mild", "painLevel_Moderate", "painLevel_Severe",
+                "painDisability_Yes", "painMeds_Yes", "painOpioids_Yes",
+                "backPain_Yes"
+                )
+
+# apply to the various candidate models
+m2_parameters <- parameters.fun(m2, 2, categories)
+m3_parameters <- parameters.fun(m3, 3, categories)
+m4_parameters <- parameters.fun(m4, 4, categories)
+m5_parameters <- parameters.fun(m5, 5, categories)
+m6_parameters <- parameters.fun(m6, 6, categories)
+
+# view
+#m2_parameters
+#m3_parameters
+#m4_parameters
+#m5_parameters
+#m6_parameters
+
+# create plots for each model
+
+# 2 class model
+
+
