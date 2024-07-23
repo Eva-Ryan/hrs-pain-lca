@@ -9,6 +9,8 @@ library(beepr)
 library(gridExtra)
 library(grid)
 library(ggpubr)
+#devtools::install_github("daob/poLCA.extras")
+library(poLCA.extras)
 
 #--------------------------------
 # PREPARE DATA
@@ -210,22 +212,27 @@ plot_grid <- grid.arrange(
                   size = 15))
 
 # save the combined plot
-ggsave(
-  filename = paste0(getwd(), "/Results - poLCA/All_plots_all_indicators.jpg"),
-  plot = plot_grid,
-  units = "in",
-  width = 10,
-  height = 10,
-  dpi = 1000
-)
+#ggsave(
+#  filename = paste0(getwd(), "/Results - poLCA/All_plots_all_indicators.jpg"),
+#  plot = plot_grid,
+#  units = "in",
+#  width = 10,
+#  height = 10,
+#  dpi = 1000
+#)
 
-# check bivariate residuals
-##  NB: FIRST RUN CODE FROM DANIEL OBERSKI'S GITHUB TO CREATE BVR FUNCTION
+# check bivariate residuals and calculate p-values using bootstrapping
+# (functions from Daniel Oberski's package poLCA.extras on GitHub)
 bvr(m2)
+bootstrap_bvr_pvals(formula = f1, fit_polca = m1, data = df, R = 500)
 bvr(m3)
+bootstrap_bvr_pvals(formula = f1, fit_polca = m1, data = df, R = 500)
 bvr(m4)
+bootstrap_bvr_pvals(formula = f1, fit_polca = m1, data = df, R = 500)
 bvr(m5)
+bootstrap_bvr_pvals(formula = f1, fit_polca = m1, data = df, R = 500)
 bvr(m6)
+bootstrap_bvr_pvals(formula = f1, fit_polca = m1, data = df, R = 500)
 
 #--------------------------------
 # PLOT THE LCA MODEL PARAMETERS
@@ -361,12 +368,12 @@ parameters_plot_grid <- grid.arrange(
 
 
 # save the combined plot
-ggsave(
-  filename = paste0(getwd(), "/Results - poLCA/item_probability_plots_all_indicators.jpg"),
-  plot = parameters_plot_grid,
-  units = "in",
-  width = 12,
-  height = 15,
-  dpi = 1000
-)
+#ggsave(
+#  filename = paste0(getwd(), "/Results - poLCA/item_probability_plots_all_indicators.jpg"),
+#  plot = parameters_plot_grid,
+#  units = "in",
+#  width = 12,
+#  height = 15,
+#  dpi = 1000
+#)
 
