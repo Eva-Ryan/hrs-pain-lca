@@ -9,6 +9,8 @@ library(beepr)
 library(gridExtra)
 library(grid)
 library(ggpubr)
+#devtools::install_github("daob/poLCA.extras")
+library(poLCA.extras)
 
 #--------------------------------
 # PREPARE DATA
@@ -85,33 +87,33 @@ tic()
 
 set.seed(6049)
 m1 <- poLCA(f1,
-            data = df, nclass = 1, maxiter = 1000, graphs = FALSE, tol = 1e-10,
-            na.rm = FALSE, nrep = 100, verbose = TRUE, calc.se = TRUE)
+            data = df, nclass = 1, maxiter = 5000, graphs = FALSE, tol = 1e-10,
+            na.rm = TRUE, nrep = 100, verbose = TRUE, calc.se = TRUE)
 
 set.seed(6049)
 m2 <- poLCA(f1,
-            data = df, nclass = 2, maxiter = 1000, graphs = FALSE, tol = 1e-10,
-            na.rm = FALSE, nrep = 100, verbose = TRUE, calc.se = TRUE)
+            data = df, nclass = 2, maxiter = 5000, graphs = FALSE, tol = 1e-10,
+            na.rm = TRUE, nrep = 100, verbose = TRUE, calc.se = TRUE)
 
 set.seed(6049)
 m3 <- poLCA(f1,
-            data = df, nclass = 3, maxiter = 1000, graphs = FALSE, tol = 1e-10,
-            na.rm = FALSE, nrep = 100, verbose = TRUE, calc.se = TRUE)
+            data = df, nclass = 3, maxiter = 5000, graphs = FALSE, tol = 1e-10,
+            na.rm = TRUE, nrep = 100, verbose = TRUE, calc.se = TRUE)
 
 set.seed(6049)
 m4 <- poLCA(f1,
-            data = df, nclass = 4, maxiter = 1000, graphs = FALSE, tol = 1e-10,
-            na.rm = FALSE, nrep = 100, verbose = TRUE, calc.se = TRUE)
+            data = df, nclass = 4, maxiter = 5000, graphs = FALSE, tol = 1e-10,
+            na.rm = TRUE, nrep = 100, verbose = TRUE, calc.se = TRUE)
 
 set.seed(6049)
 m5 <- poLCA(f1,
-            data = df, nclass = 5, maxiter = 1000, graphs = FALSE, tol = 1e-10,
-            na.rm = FALSE, nrep = 100, verbose = TRUE, calc.se = TRUE)
+            data = df, nclass = 5, maxiter = 5000, graphs = FALSE, tol = 1e-10,
+            na.rm = TRUE, nrep = 100, verbose = TRUE, calc.se = TRUE)
 
 set.seed(6049)
 m6 <- poLCA(f1,
-            data = df, nclass = 6, maxiter = 1000, graphs = FALSE, tol = 1e-10,
-            na.rm = FALSE, nrep = 100, verbose = TRUE, calc.se = TRUE)
+            data = df, nclass = 6, maxiter = 5000, graphs = FALSE, tol = 1e-10,
+            na.rm = TRUE, nrep = 100, verbose = TRUE, calc.se = TRUE)
 
 toc()
 beep()
@@ -210,22 +212,28 @@ plot_grid <- grid.arrange(
                   size = 15))
 
 # save the combined plot
-ggsave(
-  filename = paste0(getwd(), "/Results - poLCA/All_plots_all_indicators.jpg"),
-  plot = plot_grid,
-  units = "in",
-  width = 10,
-  height = 10,
-  dpi = 1000
-)
+#ggsave(
+#  filename = paste0(getwd(), "/Results - poLCA/All_plots_all_indicators.jpg"),
+#  plot = plot_grid,
+#  units = "in",
+#  width = 10,
+#  height = 10,
+#  dpi = 1000
+#)
 
-# check bivariate residuals
-##  NB: FIRST RUN CODE FROM DANIEL OBERSKI'S GITHUB TO CREATE BVR FUNCTION
+# check bivariate residuals and calculate p-values using bootstrapping
+# (functions from Daniel Oberski's package poLCA.extras on GitHub)
+# NOTE: cannot have missing data values
 bvr(m2)
+bootstrap_bvr_pvals(formula = f1, fit_polca = m1, data = df, R = 500)
 bvr(m3)
+bootstrap_bvr_pvals(formula = f1, fit_polca = m1, data = df, R = 500)
 bvr(m4)
+bootstrap_bvr_pvals(formula = f1, fit_polca = m1, data = df, R = 500)
 bvr(m5)
+bootstrap_bvr_pvals(formula = f1, fit_polca = m1, data = df, R = 500)
 bvr(m6)
+bootstrap_bvr_pvals(formula = f1, fit_polca = m1, data = df, R = 500)
 
 #--------------------------------
 # PLOT THE LCA MODEL PARAMETERS
@@ -361,12 +369,12 @@ parameters_plot_grid <- grid.arrange(
 
 
 # save the combined plot
-ggsave(
-  filename = paste0(getwd(), "/Results - poLCA/item_probability_plots_all_indicators.jpg"),
-  plot = parameters_plot_grid,
-  units = "in",
-  width = 12,
-  height = 15,
-  dpi = 1000
-)
+#ggsave(
+#  filename = paste0(getwd(), "/Results - poLCA/item_probability_plots_all_indicators.jpg"),
+#  plot = parameters_plot_grid,
+#  units = "in",
+#  width = 12,
+#  height = 15,
+#  dpi = 1000
+#)
 
