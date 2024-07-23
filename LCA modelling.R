@@ -225,15 +225,15 @@ plot_grid <- grid.arrange(
 # (functions from Daniel Oberski's package poLCA.extras on GitHub)
 # NOTE: cannot have missing data values
 bvr(m2)
-bootstrap_bvr_pvals(formula = f1, fit_polca = m1, data = df, R = 500)
+bootstrap_bvr_pvals(formula = f1, fit_polca = m2, data = df, R = 500)
 bvr(m3)
-bootstrap_bvr_pvals(formula = f1, fit_polca = m1, data = df, R = 500)
+bootstrap_bvr_pvals(formula = f1, fit_polca = m3, data = df, R = 500)
 bvr(m4)
-bootstrap_bvr_pvals(formula = f1, fit_polca = m1, data = df, R = 500)
+bootstrap_bvr_pvals(formula = f1, fit_polca = m4, data = df, R = 500)
 bvr(m5)
-bootstrap_bvr_pvals(formula = f1, fit_polca = m1, data = df, R = 500)
+bootstrap_bvr_pvals(formula = f1, fit_polca = m5, data = df, R = 500)
 bvr(m6)
-bootstrap_bvr_pvals(formula = f1, fit_polca = m1, data = df, R = 500)
+bootstrap_bvr_pvals(formula = f1, fit_polca = m6, data = df, R = 500)
 
 #--------------------------------
 # PLOT THE LCA MODEL PARAMETERS
