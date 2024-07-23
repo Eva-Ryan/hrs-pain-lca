@@ -70,7 +70,8 @@ df_cc <- df %>%
 # (2.93%)
 
 # save complete cases df
-write_csv(df_cc, "HRS_2016_pain_cc.csv")
+#write_csv(df_cc, "HRS_2016_pain_cc.csv")
+
 
 #--------------------------------
 # FIT LCA MODELS
@@ -218,6 +219,13 @@ ggsave(
   dpi = 1000
 )
 
+# check bivariate residuals
+##  NB: FIRST RUN CODE FROM DANIEL OBERSKI'S GITHUB TO CREATE BVR FUNCTION
+bvr(m2)
+bvr(m3)
+bvr(m4)
+bvr(m5)
+bvr(m6)
 
 #--------------------------------
 # PLOT THE LCA MODEL PARAMETERS
