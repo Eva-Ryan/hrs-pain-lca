@@ -87,32 +87,32 @@ tic()
 
 set.seed(6049)
 m1 <- poLCA(f1,
-            data = df, nclass = 1, maxiter = 5000, graphs = FALSE, tol = 1e-10,
+            data = df_cc, nclass = 1, maxiter = 5000, graphs = FALSE, tol = 1e-10,
             na.rm = TRUE, nrep = 100, verbose = TRUE, calc.se = TRUE)
 
 set.seed(6049)
 m2 <- poLCA(f1,
-            data = df, nclass = 2, maxiter = 5000, graphs = FALSE, tol = 1e-10,
+            data = df_cc, nclass = 2, maxiter = 5000, graphs = FALSE, tol = 1e-10,
             na.rm = TRUE, nrep = 100, verbose = TRUE, calc.se = TRUE)
 
 set.seed(6049)
 m3 <- poLCA(f1,
-            data = df, nclass = 3, maxiter = 5000, graphs = FALSE, tol = 1e-10,
+            data = df_cc, nclass = 3, maxiter = 5000, graphs = FALSE, tol = 1e-10,
             na.rm = TRUE, nrep = 100, verbose = TRUE, calc.se = TRUE)
 
 set.seed(6049)
 m4 <- poLCA(f1,
-            data = df, nclass = 4, maxiter = 5000, graphs = FALSE, tol = 1e-10,
+            data = df_cc, nclass = 4, maxiter = 5000, graphs = FALSE, tol = 1e-10,
             na.rm = TRUE, nrep = 100, verbose = TRUE, calc.se = TRUE)
 
 set.seed(6049)
 m5 <- poLCA(f1,
-            data = df, nclass = 5, maxiter = 5000, graphs = FALSE, tol = 1e-10,
+            data = df_cc, nclass = 5, maxiter = 5000, graphs = FALSE, tol = 1e-10,
             na.rm = TRUE, nrep = 100, verbose = TRUE, calc.se = TRUE)
 
 set.seed(6049)
 m6 <- poLCA(f1,
-            data = df, nclass = 6, maxiter = 5000, graphs = FALSE, tol = 1e-10,
+            data = df_cc, nclass = 6, maxiter = 5000, graphs = FALSE, tol = 1e-10,
             na.rm = TRUE, nrep = 100, verbose = TRUE, calc.se = TRUE)
 
 toc()
@@ -212,14 +212,14 @@ plot_grid <- grid.arrange(
                   size = 15))
 
 # save the combined plot
-#ggsave(
-#  filename = paste0(getwd(), "/Results - poLCA/All_plots_all_indicators.jpg"),
-#  plot = plot_grid,
-#  units = "in",
-#  width = 10,
-#  height = 10,
-#  dpi = 1000
-#)
+ggsave(
+  filename = paste0(getwd(), "/Results - poLCA/All_plots_all_indicators_missing_removed.jpg"),
+  plot = plot_grid,
+  units = "in",
+  width = 10,
+  height = 10,
+  dpi = 1000
+)
 
 # check bivariate residuals and calculate p-values using bootstrapping
 # (functions from Daniel Oberski's package poLCA.extras on GitHub)
@@ -369,12 +369,12 @@ parameters_plot_grid <- grid.arrange(
 
 
 # save the combined plot
-#ggsave(
-#  filename = paste0(getwd(), "/Results - poLCA/item_probability_plots_all_indicators.jpg"),
-#  plot = parameters_plot_grid,
-#  units = "in",
-#  width = 12,
-#  height = 15,
-#  dpi = 1000
-#)
+ggsave(
+  filename = paste0(getwd(), "/Results - poLCA/item_probability_plots_all_indicators_missing_removed.jpg"),
+  plot = parameters_plot_grid,
+  units = "in",
+  width = 12,
+  height = 15,
+  dpi = 1000
+)
 
