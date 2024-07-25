@@ -165,7 +165,7 @@ aic_plot <- ggplot(indices, aes(x = classes, y = aic)) +
   geom_point(shape = 21, size = 2, fill = "red") +
   theme_light() +
   xlab("Number of classes") + ylab("AIC") +
-  ggtitle("AIC plot") +
+  ggtitle("AIC") +
   theme(plot.title = element_text(hjust = 0.5)) +
   scale_x_continuous(breaks = c(1:6))
 aic_plot
@@ -176,7 +176,7 @@ bic_plot <- ggplot(indices, aes(x = classes, y = bic)) +
   geom_point(shape = 21, size = 2, fill = "red") +
   theme_light() +
   xlab("Number of classes") + ylab("BIC") +
-  ggtitle("BIC plot") +
+  ggtitle("BIC") +
   theme(plot.title = element_text(hjust = 0.5)) +
   scale_x_continuous(breaks = c(1:6))
 bic_plot
@@ -187,7 +187,7 @@ nfi_plot <- ggplot(indices[-1,], aes(x = classes, y = nfi)) +
   geom_point(shape = 21, size = 2, fill = "red") +
   theme_light() +
   xlab("Number of classes") + ylab("NFI") +
-  ggtitle("NFI plot") +
+  ggtitle("NFI") +
   theme(plot.title = element_text(hjust = 0.5)) +
   scale_x_continuous(breaks = c(2:6))
 nfi_plot
@@ -198,7 +198,7 @@ nnfi_plot <- ggplot(indices[-1,], aes(x = classes, y = nnfi)) +
   geom_point(shape = 21, size = 2, fill = "red") +
   theme_light() +
   xlab("Number of classes") + ylab("NNFI") +
-  ggtitle("NNFI plot") +
+  ggtitle("NNFI") +
   theme(plot.title = element_text(hjust = 0.5)) +
   scale_x_continuous(breaks = c(2:6))
 nnfi_plot
