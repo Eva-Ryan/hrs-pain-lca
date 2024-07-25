@@ -1,5 +1,8 @@
-# code to fit a pain LCA model using 2016 HRS data (just the participants who
-# reported pain
+# Code to fit a pain LCA model using 2016 HRS data (just the participants who
+# reported pain for Chapter 6 of my PhD thesis.
+
+# Author: Eva Ryan
+# Date: July 2024
 #------------------------------------------------------------------------------
 
 # load packages
@@ -119,8 +122,19 @@ toc()
 beep()
 
 # create vectors of fit statistics
-AICs <- c(m1$aic, m2$aic, m3$aic, m4$aic, m5$aic, m6$aic)
-BICs <- c(m1$bic, m2$bic, m3$bic, m4$bic, m5$bic, m6$bic)
+#AICs <- c(m1$aic, m2$aic, m3$aic, m4$aic, m5$aic, m6$aic)
+#BICs <- c(m1$bic, m2$bic, m3$bic, m4$bic, m5$bic, m6$bic)
+
+# NOTE: poLCA calculates the AIC and BIC based on the log-likelihood (LL) using
+# the formulae AIC = -2log(LL) + 2P and BIC = -2log(LL) + log(N)P
+
+# calculate AICs and BICs manually using formulas from Collins & Lanza (2010)
+# instead as these versions are also used in Chapter 5 of my thesis
+AICs <- c(m1$Gsq + 2*m1$npar, m2$Gsq + 2*m2$npar, m3$Gsq + 2*m3$npar,
+          m4$Gsq + 2*m4$npar, m5$Gsq + 2*m5$npar, m6$Gsq + 2*m6$npar)
+BICs <- c(m1$Gsq + log(nrow(df_cc))*m1$npar, m2$Gsq + log(nrow(df_cc))*m2$npar,
+          m3$Gsq + log(nrow(df_cc))*m3$npar, m4$Gsq + log(nrow(df_cc))*m4$npar,
+          m5$Gsq + log(nrow(df_cc))*m5$npar, m6$Gsq + log(nrow(df_cc))*m6$npar)
 
 #------------------------
 # calculate NFI and NNFI
@@ -164,8 +178,9 @@ aic_plot <- ggplot(indices, aes(x = classes, y = aic)) +
   geom_point(shape = 21, size = 2, fill = "red") +
   theme_light() +
   xlab("Number of classes") + ylab("AIC") +
-  ggtitle("AIC") +
-  theme(plot.title = element_text(hjust = 0.5)) +
+  ggtitle("")  +
+  theme(axis.title = element_text(size = 16),
+        axis.text = element_text(size = 14)) +
   scale_x_continuous(breaks = c(1:6))
 aic_plot
 
@@ -175,8 +190,9 @@ bic_plot <- ggplot(indices, aes(x = classes, y = bic)) +
   geom_point(shape = 21, size = 2, fill = "red") +
   theme_light() +
   xlab("Number of classes") + ylab("BIC") +
-  ggtitle("BIC") +
-  theme(plot.title = element_text(hjust = 0.5)) +
+  ggtitle("") +
+  theme(axis.title = element_text(size = 16),
+        axis.text = element_text(size = 14)) +
   scale_x_continuous(breaks = c(1:6))
 bic_plot
 
@@ -186,8 +202,9 @@ nfi_plot <- ggplot(indices[-1,], aes(x = classes, y = nfi)) +
   geom_point(shape = 21, size = 2, fill = "red") +
   theme_light() +
   xlab("Number of classes") + ylab("NFI") +
-  ggtitle("NFI") +
-  theme(plot.title = element_text(hjust = 0.5)) +
+  ggtitle("")  +
+  theme(axis.title = element_text(size = 16),
+        axis.text = element_text(size = 14)) +
   scale_x_continuous(breaks = c(2:6))
 nfi_plot
 
@@ -197,8 +214,9 @@ nnfi_plot <- ggplot(indices[-1,], aes(x = classes, y = nnfi)) +
   geom_point(shape = 21, size = 2, fill = "red") +
   theme_light() +
   xlab("Number of classes") + ylab("NNFI") +
-  ggtitle("NNFI") +
-  theme(plot.title = element_text(hjust = 0.5)) +
+  ggtitle("")  +
+  theme(axis.title = element_text(size = 16),
+        axis.text = element_text(size = 14)) +
   scale_x_continuous(breaks = c(2:6))
 nnfi_plot
 
@@ -225,8 +243,8 @@ ggsave(
   filename = paste0(getwd(), "/Plots/AIC_all_indicators_pain_only.jpg"),
   plot = aic_plot,
   units = "in",
-  width = 6,
-  height = 5,
+  width = 5,
+  height = 4,
   dpi = 1000
 )
 
@@ -234,8 +252,8 @@ ggsave(
   filename = paste0(getwd(), "/Plots/BIC_all_indicators_pain_only.jpg"),
   plot = bic_plot,
   units = "in",
-  width = 6,
-  height = 5,
+  width = 5,
+  height = 4,
   dpi = 1000
 )
 
@@ -243,8 +261,8 @@ ggsave(
   filename = paste0(getwd(), "/Plots/NFI_all_indicators_pain_only.jpg"),
   plot = nfi_plot,
   units = "in",
-  width = 6,
-  height = 5,
+  width = 5,
+  height = 4,
   dpi = 1000
 )
 
@@ -252,8 +270,8 @@ ggsave(
   filename = paste0(getwd(), "/Plots/NNFI_all_indicators_pain_only.jpg"),
   plot = nnfi_plot,
   units = "in",
-  width = 6,
-  height = 5,
+  width = 5,
+  height = 4,
   dpi = 1000
 )
 
@@ -320,7 +338,7 @@ parameters.fun <- function(model, nclass, cats){
 
 # specify categories
 categories <- c("Mild pain", "Moderate pain", "Severe pain",
-                "Disabling pain", "Takes meds (OTC)", "Takes opioids",
+                "Disabling pain", "Took meds (OTC)", "Took opioids",
                 "Back pain"
 )
 
@@ -349,8 +367,11 @@ plot_2classes <- m2_parameters %>%
   theme_light() +
   #xlab("Item responses") + ylab("Item response probabilities") +
   xlab("") + ylab("") +
-  ggtitle("2 class LCA model") +
-  theme(plot.title = element_text(hjust = 0.5))
+  ggtitle("2-class LCA model") +
+  theme(plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text = element_text(size = 12),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 12))
 
 # 3 class model
 plot_3classes <- m3_parameters %>%
@@ -361,8 +382,11 @@ plot_3classes <- m3_parameters %>%
   theme_light() +
   #xlab("Item responses") + ylab("Item response probabilities") +
   xlab("") + ylab("") +
-  ggtitle("3 class LCA model") +
-  theme(plot.title = element_text(hjust = 0.5))
+  ggtitle("3-class LCA model") +
+  theme(plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text = element_text(size = 12),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 12))
 
 # 4 class model
 plot_4classes <- m4_parameters %>%
@@ -373,8 +397,11 @@ plot_4classes <- m4_parameters %>%
   theme_light() +
   #xlab("Item responses") + ylab("Item response probabilities") +
   xlab("") + ylab("") +
-  ggtitle("4 class LCA model") +
-  theme(plot.title = element_text(hjust = 0.5))
+  ggtitle("4-class LCA model") +
+  theme(plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text = element_text(size = 12),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 12))
 
 # 5 class model
 plot_5classes <- m5_parameters %>%
@@ -385,8 +412,11 @@ plot_5classes <- m5_parameters %>%
   theme_light() +
   #xlab("Item responses") + ylab("Item response probabilities") +
   xlab("") + ylab("") +
-  ggtitle("5 class LCA model") +
-  theme(plot.title = element_text(hjust = 0.5))
+  ggtitle("5-class LCA model") +
+  theme(plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text = element_text(size = 12),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 12))
 
 # 6 class model
 plot_6classes <- m6_parameters %>%
@@ -397,8 +427,11 @@ plot_6classes <- m6_parameters %>%
   theme_light() +
   #xlab("Item responses") + ylab("Item response probabilities") +
   xlab("") + ylab("") +
-  ggtitle("6 class LCA model") +
-  theme(plot.title = element_text(hjust = 0.5))
+  ggtitle("6-class LCA model") +
+  theme(plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text = element_text(size = 12),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 12))
 
 # put the plots together
 ## combine all plots together into one figure
@@ -421,3 +454,20 @@ ggsave(
   dpi = 1000
 )
 
+# save just the final 3-class solution plot
+# first, add axis labels
+plot_3classes <- plot_3classes + xlab("Items") +
+  ylab("Item response probabilities") +
+  theme(axis.title = element_text(size = 20),
+        plot.title = element_text(size = 22),
+        legend.title = element_text(size = 20),
+        axis.text = element_text(size = 15),
+        legend.text = element_text(size = 18))
+ggsave(
+  filename = paste0(getwd(), "/Plots/item_probability_plots_pain_only_3class.jpg"),
+  plot = plot_3classes,
+  units = "in",
+  width = 14,
+  height = 8,
+  dpi = 1000
+)
