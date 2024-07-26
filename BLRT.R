@@ -38,12 +38,8 @@ BLRT <- function(lca_model_k_1, lca_model_k, r){
     sims[[i]] <- poLCA.simdata(N = lca_model_k_1$Nobs,
                                probs = lca_model_k_1$probs,
                                x = NULL, niv = 0, b = NULL,
-                               missval = FALSE, pctmiss = NULL)
+                               missval = FALSE, pctmiss = NULL)$dat
   }
-
-  # create lists to store LCA models fitted to the simulated datasets
-  #boot_k_1 <- list()
-  #boot_k <- list()
 
   # create a dataframe to store the Gsq values and difference for each set of
   # fitted models
@@ -53,27 +49,38 @@ BLRT <- function(lca_model_k_1, lca_model_k, r){
   # specify LCA model formula
   f = as.formula(cbind(Y1, Y2, Y3, Y4, Y5)~1)
 
-  # fit k-1 class and k class LCA models to the simulated datasets and save
+  # fit k-1 class and k class LCA models to the simulated datasets
   set.seed(9406)
-  for(i in 1:r){
-    boot_k_1 <- poLCA(f, data = sims[[i]]$dat, nclass = k-1, maxiter = 500,
-                           graphs = FALSE, tol = 1e-8, na.rm = TRUE,
-                           nrep = 20, verbose = FALSE, calc.se = FALSE)
+  boot_k_1 <- lapply(X = sims, FUN = function(df){
+    poLCA(f, data = df, nclass = k-1, maxiter = 1000,
+          graphs = FALSE, tol = 1e-8, na.rm = TRUE,
+          nrep = 10, verbose = FALSE, calc.se = FALSE)
+  })
+  set.seed(9406)
+  boot_k <- lapply(X = sims, FUN = function(df){
+    poLCA(f, data = df, nclass = k, maxiter = 1000,
+          graphs = FALSE, tol = 1e-8, na.rm = TRUE,
+          nrep = 10, verbose = FALSE, calc.se = FALSE)
+  })
 
-    boot_k <- poLCA(f, data = sims[[i]]$dat, nclass = k, maxiter = 500,
-                         graphs = FALSE, tol = 1e-8, na.rm = TRUE,
-                         nrep = 20, verbose = FALSE, calc.se = FALSE)
+  # extract Gsq value for each fitted model
+  Gsq_boot_k_1 <- lapply(X = boot_k_1, FUN = function(df){
+    df$Gsq
+  })
+  Gsq_boot_k <- lapply(X = boot_k, FUN = function(df){
+    df$Gsq
+  })
 
-    # save the Gsq statistics from each fitted model
-    Gsqs_summary$k_1[i] <- boot_k_1$Gsq
-    Gsqs_summary$k[i] <- boot_k$Gsq
-    Gsqs_summary$difference[i] <-  boot_k_1$Gsq - boot_k$Gsq
-  }
+  # save the Gsq statistics from each fitted model
+  Gsqs_summary$k_1 <- unlist(Gsq_boot_k_1)
+  Gsqs_summary$k <- unlist(Gsq_boot_k)
+  Gsqs_summary$difference <-  Gsqs_summary$k_1 -  Gsqs_summary$k
 
-  # find percentage of bootstrapped sample G^2 differences that the observed
-  # difference is bigger than
-  p_value <- sum(Gsqs_summary$difference - Gsq_diff < 0)/r
 
-  # return p-value of BLRT
-  return(p_value)
+# find percentage of bootstrapped sample G^2 differences that the observed
+# difference is bigger than
+p_value <- sum(Gsqs_summary$difference - Gsq_diff < 0)/r
+
+# return p-value of BLRT
+return(p_value)
 }
