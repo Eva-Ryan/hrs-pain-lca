@@ -78,6 +78,7 @@ df_cc <- df %>%
            is.na(backPain) == FALSE) # 8085 - 7712 = 373 participants removed
 #                                     (4.61%)
 
+
 #--------------------------------
 # FIT LCA MODELS
 
@@ -136,21 +137,14 @@ BICs <- c(m1$Gsq + log(nrow(df_cc))*m1$npar, m2$Gsq + log(nrow(df_cc))*m2$npar,
           m3$Gsq + log(nrow(df_cc))*m3$npar, m4$Gsq + log(nrow(df_cc))*m4$npar,
           m5$Gsq + log(nrow(df_cc))*m5$npar, m6$Gsq + log(nrow(df_cc))*m6$npar)
 
-#------------------------
+
 # calculate NFI and NNFI
 
-# calculate degrees of freedom for each model using the formula df = nz − P − 1,
-# where nz = # of cells in contingency table and P = number of parameters
-# estimated for the model
-nz <- 3*2*2*2*2 # incl all possible pain indicator variables
+# extract degrees of freedom from fitted models
+degfree <- c(m1$resid.df, m2$resid.df, m3$resid.df, m4$resid.df, m5$resid.df,
+             m6$resid.df)
 
-degfree <- c(nz - m1$npar - 1,
-             nz - m2$npar - 1,
-             nz - m3$npar - 1,
-             nz - m4$npar - 1,
-             nz - m5$npar - 1,
-             nz - m6$npar - 1)
-
+# calculate NFI
 NFIs <- c(NA,
           (m1$Gsq - m2$Gsq)/m1$Gsq,
           (m1$Gsq - m3$Gsq)/m1$Gsq,
@@ -158,6 +152,7 @@ NFIs <- c(NA,
           (m1$Gsq - m5$Gsq)/m1$Gsq,
           (m1$Gsq - m6$Gsq)/m1$Gsq)
 
+# calculate NNFI
 NNFIs <- c(NA,
            ((m1$Gsq/degfree[1]) - (m2$Gsq/degfree[2]))/((m1$Gsq/degfree[1]) - 1),
            ((m1$Gsq/degfree[1]) - (m3$Gsq/degfree[3]))/((m1$Gsq/degfree[1]) - 1),
@@ -471,3 +466,22 @@ ggsave(
   height = 8,
   dpi = 1000
 )
+
+
+#-----------------------------
+# CONDUCT BLRTs
+# Note: first load BLRT function from separate BLRT.R file
+
+# calculate BLRT for each candidate model with 2-6 classes
+tic()
+BLRT_m2 <- BLRT(m1, m2, 100)
+beep(5)
+BLRT_m3 <- BLRT(m2, m3, 100)
+beep(5)
+BLRT_m4 <- BLRT(m3, m4, 100)
+beep(5)
+BLRT_m5 <- BLRT(m4, m5, 100)
+beep(5)
+BLRT_m6 <- BLRT(m5, m6, 100)
+beep(5)
+toc()
