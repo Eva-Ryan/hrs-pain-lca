@@ -78,8 +78,8 @@ BLRT <- function(lca_model_k_1, lca_model_k, r){
 
 
 # find percentage of bootstrapped sample G^2 differences that the observed
-# difference is bigger than
-p_value <- sum(Gsqs_summary$difference - Gsq_diff < 0)/r
+# difference is smaller than
+p_value <- sum(Gsqs_summary$difference - Gsq_diff > 0)/r
 
 # return p-value of BLRT
 return(p_value)
