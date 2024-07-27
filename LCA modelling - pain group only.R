@@ -225,7 +225,7 @@ plot_grid <- grid.arrange(
 
 # save the combined plot
 ggsave(
-  filename = paste0(getwd(), "/Results - poLCA/All_plots_all_indicators_pain_only.jpg"),
+  filename = paste0(getwd(), "/Results - poLCA/All_plots_all_indicators_pain_only.png"),
   plot = plot_grid,
   units = "in",
   width = 10,
@@ -235,7 +235,7 @@ ggsave(
 
 # save each plot individually
 ggsave(
-  filename = paste0(getwd(), "/Plots/AIC_all_indicators_pain_only.jpg"),
+  filename = paste0(getwd(), "/Plots/AIC_all_indicators_pain_only.png"),
   plot = aic_plot,
   units = "in",
   width = 5,
@@ -244,7 +244,7 @@ ggsave(
 )
 
 ggsave(
-  filename = paste0(getwd(), "/Plots/BIC_all_indicators_pain_only.jpg"),
+  filename = paste0(getwd(), "/Plots/BIC_all_indicators_pain_only.png"),
   plot = bic_plot,
   units = "in",
   width = 5,
@@ -253,7 +253,7 @@ ggsave(
 )
 
 ggsave(
-  filename = paste0(getwd(), "/Plots/NFI_all_indicators_pain_only.jpg"),
+  filename = paste0(getwd(), "/Plots/NFI_all_indicators_pain_only.png"),
   plot = nfi_plot,
   units = "in",
   width = 5,
@@ -262,7 +262,7 @@ ggsave(
 )
 
 ggsave(
-  filename = paste0(getwd(), "/Plots/NNFI_all_indicators_pain_only.jpg"),
+  filename = paste0(getwd(), "/Plots/NNFI_all_indicators_pain_only.png"),
   plot = nnfi_plot,
   units = "in",
   width = 5,
@@ -441,7 +441,7 @@ parameters_plot_grid <- grid.arrange(
 
 # save the combined plot
 ggsave(
-  filename = paste0(getwd(), "/Plots/item_probability_plots_all_indicators_pain_only.jpg"),
+  filename = paste0(getwd(), "/Plots/item_probability_plots_all_indicators_pain_only.png"),
   plot = parameters_plot_grid,
   units = "in",
   width = 12,
@@ -459,7 +459,7 @@ plot_3classes <- plot_3classes + xlab("Items") +
         axis.text = element_text(size = 15),
         legend.text = element_text(size = 18))
 ggsave(
-  filename = paste0(getwd(), "/Plots/item_probability_plots_pain_only_3class.jpg"),
+  filename = paste0(getwd(), "/Plots/item_probability_plots_pain_only_3class.png"),
   plot = plot_3classes,
   units = "in",
   width = 14,
