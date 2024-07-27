@@ -42,7 +42,7 @@ names(rand16) <- c("troubledWithPain", "painUsualSeverity", "painPreventActivity
                    "cancerYearMostRecent", "diabetes", "lungDis", "hrtCond",
                    "angina", "stroke", "arthritis",
                    "weight", "htFeet", "htInches", "maritalStatus", "jobStatus",
-                   "foodInsecurity", "measuredWgt", "measuredHgt",
+                   "foodSecurity", "measuredWgt", "measuredHgt",
                    "hhidpn")
 
 ### Data for BMI
@@ -510,14 +510,14 @@ summary(as.factor(df$jobStatus4Cats))
 # recode "in the last two years, have you always had enough money to buy food?"
 # to 1 = yes, 0 = no
 df <- df %>%
-  mutate(foodInsecurity = ifelse(foodInsecurity >= 1 &
-                                   foodInsecurity <= 5,
-                                 foodInsecurity, NA)) %>%
-  mutate(foodInsecurity = factor(car::recode(foodInsecurity,
+  mutate(foodSecurity = ifelse(foodSecurity >= 1 &
+                                   foodSecurity <= 5,
+                                 foodSecurity, NA)) %>%
+  mutate(foodSecurity = factor(car::recode(foodSecurity,
                                              "1 = 1;
                                                  5 = 0"),
                                  levels = c(0,1), labels = c("no", "yes")))
-summary(as.factor(df$foodInsecurity))
+summary(as.factor(df$foodSecurity))
 
 # Create a flag showing if someone was in active cancer treatment (or palliative
 # care) at time of current wave
@@ -833,7 +833,7 @@ df_final <- df %>%
   select(hhidpn, troubledWithPain, painUsualSeverity, painPreventActivity,
          painMeds, painLevel, painDisability, painOpioids, backPain, diabetes,
          lungDis, hrtCond, angina, stroke, arthritis, maritalStatus, jobStatus,
-         foodInsecurity, prescode, sample_wgt, palive, gender, birthYear,
+         foodSecurity, prescode, sample_wgt, palive, gender, birthYear,
          monthOfDeath, yearOfDeath, yrOf1stIntvw, fwhy0wgt, householdSize,
          numChildren, veteranStatus,  randCESD, region, urbanicity, age,
          race4Cats, edu4Cats, wealthQuarts, region4Cats, jobStatus4Cats,
