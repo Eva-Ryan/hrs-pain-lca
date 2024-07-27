@@ -830,12 +830,11 @@ summary(as.factor(df$insurance))
 
 # select just relevant variables
 df_final <- df %>%
-  select(hhidpn, troubledWithPain, painUsualSeverity, painPreventActivity,
-         painMeds, painLevel, painDisability, painOpioids, backPain, diabetes,
-         lungDis, hrtCond, angina, stroke, arthritis, maritalStatus, jobStatus,
-         foodSecurity, prescode, sample_wgt, palive, gender, birthYear,
-         monthOfDeath, yearOfDeath, yrOf1stIntvw, fwhy0wgt, householdSize,
-         numChildren, veteranStatus,  randCESD, region, urbanicity, age,
+  select(hhidpn, troubledWithPain, painUsualSeverity, painMeds, painDisability,
+         painOpioids, backPain, diabetes, lungDis, hrtCond, angina, stroke,
+         arthritis, maritalStatus, foodSecurity, prescode, sample_wgt, palive,
+         gender, birthYear, monthOfDeath, yearOfDeath, yrOf1stIntvw, fwhy0wgt,
+         householdSize, numChildren, veteranStatus,  randCESD, urbanicity, age,
          race4Cats, edu4Cats, wealthQuarts, region4Cats, jobStatus4Cats,
          cancerActive, bmi6Cats, smokeStatus, insurance)
 
