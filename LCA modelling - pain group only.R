@@ -15,6 +15,7 @@ library(grid)
 library(ggpubr)
 #devtools::install_github("daob/poLCA.extras")
 library(poLCA.extras)
+library(tableone)
 
 #--------------------------------
 # PREPARE DATA
@@ -45,7 +46,35 @@ df <- df %>%
   mutate(painOpioids = factor(painOpioids, levels = c(1,2),
                               labels = c("yes", "no"))) %>%
   mutate(backPain = factor(backPain, levels = c(1,2),
-                           labels = c("yes", "no")))
+                           labels = c("yes", "no"))) %>%
+  mutate(diabetes = factor(diabetes, levels = c("no", "yes"),
+                           labels = c("no", "yes"))) %>%
+  mutate(lungDis = factor(lungDis, levels = c("no", "yes"),
+                          labels = c("no", "yes"))) %>%
+  mutate(hrtCond = factor(hrtCond, levels = c("no", "yes"),
+                          labels = c("no", "yes"))) %>%
+  mutate(angina = factor(angina, levels = c("no", "yes"),
+                         labels = c("no", "yes"))) %>%
+  mutate(stroke = factor(stroke, levels = c("no", "yes"),
+                         labels = c("no", "yes"))) %>%
+  mutate(arthritis = factor(arthritis, levels = c("no", "yes"),
+                            labels = c("no", "yes"))) %>%
+  mutate(foodSecurity = factor(foodSecurity, levels = c("no", "yes"),
+                               labels = c("no", "yes"))) %>%
+  mutate(cancerActive = factor(cancerActive, levels = c(0, 1),
+                               labels = c("no", "yes"))) %>%
+  mutate(maritalStatus = factor(maritalStatus, levels = c(1,2,3,4,5),
+                                labels = c("Married", "Separated/Divorced",
+                                           "Widowed", "Never married",
+                                           "Other"))) %>%
+  mutate(veteranStatus = factor(veteranStatus)) %>%
+  mutate(region4Cats = factor(region4Cats)) %>%
+  mutate(urbanicity = factor(urbanicity)) %>%
+  mutate(jobStatus4Cats = factor(jobStatus4Cats)) %>%
+  mutate(bmi6Cats = factor(bmi6Cats)) %>%
+  mutate(smokeStatus = factor(smokeStatus)) %>%
+  mutate(insurance = factor(insurance)) %>%
+  mutate(wealthQuarts = factor(wealthQuarts))
 
 # data summary
 summary(df)
@@ -485,3 +514,42 @@ beep(5)
 BLRT_m6 <- BLRT(m5, m6, 100)
 beep(5)
 toc()
+
+
+#------------------------------
+# EXAMINE CLASSES
+
+# assign class memberships from 3 class model posterior probabilities
+df_cc$class_mem3 <- apply(m3$posterior,
+                          MARGIN = 1,
+                          FUN = function(x){which(x == max(x))})
+
+### Create a descriptive Table 1 ###
+
+# List variables to be included in the table
+myVars <- c("diabetes", "lungDis", "hrtCond", "angina", "stroke", "arthritis",
+            "maritalStatus", "foodSecurity", "gender", "householdSize", "numChildren",
+            "veteranStatus", "randCESD", "urbanicity", "age", "race4Cats", "edu4Cats",
+            "wealthQuarts", "region4Cats", "jobStatus4Cats", "cancerActive",
+            "bmi6Cats", "smokeStatus", "insurance")
+
+# List variables which are categorical
+catVars <- c("diabetes", "lungDis", "hrtCond", "angina", "stroke", "arthritis",
+             "maritalStatus", "foodSecurity", "gender", "veteranStatus", "urbanicity",
+             "race4Cats", "edu4Cats", "wealthQuarts", "region4Cats", "jobStatus4Cats",
+             "cancerActive", "bmi6Cats", "smokeStatus", "insurance")
+
+# List continuous variables which should be displayed as median (IQR)
+medVars <- c("householdSize", "numChildren", "randCESD", "age")
+
+# Create table 1
+tab1 <- CreateTableOne(vars = myVars, # set descriptive variables
+                       strata = "class_mem3", # define stratifying variable
+                       data = df_cc,
+                       factorVars = catVars) # define categorical variables
+
+# Print table 1
+print(tab1,
+      nonnormal = medVars,
+      formatOptions = list(big.mark = ","),
+      test = FALSE)
