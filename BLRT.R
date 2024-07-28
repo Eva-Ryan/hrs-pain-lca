@@ -54,13 +54,13 @@ BLRT <- function(lca_model_k_1, lca_model_k, r){
   boot_k_1 <- lapply(X = sims, FUN = function(df){
     poLCA(f, data = df, nclass = k-1, maxiter = 1000,
           graphs = FALSE, tol = 1e-8, na.rm = TRUE,
-          nrep = 10, verbose = FALSE, calc.se = FALSE)
+          nrep = 50, verbose = FALSE, calc.se = FALSE)
   })
   set.seed(9406)
   boot_k <- lapply(X = sims, FUN = function(df){
     poLCA(f, data = df, nclass = k, maxiter = 1000,
           graphs = FALSE, tol = 1e-8, na.rm = TRUE,
-          nrep = 10, verbose = FALSE, calc.se = FALSE)
+          nrep = 50, verbose = FALSE, calc.se = FALSE)
   })
 
   # extract Gsq value for each fitted model
