@@ -524,6 +524,9 @@ df_cc$class_mem3 <- apply(m3$posterior,
                           MARGIN = 1,
                           FUN = function(x){which(x == max(x))})
 
+# check average posterior probability for class assignments
+mean(apply(m3$posterior, MARGIN = 1, FUN = max))
+
 ### Create a descriptive Table 1 ###
 
 # List variables to be included in the table
