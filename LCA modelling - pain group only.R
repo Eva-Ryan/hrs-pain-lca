@@ -100,13 +100,51 @@ data.frame(NA_count = na_count,
 
 # most missing is 3.2% for opioid use variable
 
+# check background characteristics of those with full data versus those with
+# some missing pain data
+
+# create variable missing with 0 = no missing pain data and 1 = any missing pain
+# data
+df <- df %>%
+  mutate(missing = ifelse(is.na(painUsualSeverity) == FALSE &
+                            is.na(painDisability) == FALSE &
+                            is.na(painMeds) == FALSE &
+                            is.na(painOpioids) == FALSE &
+                            is.na(backPain) == FALSE, 0, 1))
+
+miss_tab <- CreateTableOne(vars = c("diabetes", "lungDis", "hrtCond", "angina",
+                                    "stroke", "arthritis", "maritalStatus",
+                                    "foodSecurity", "gender", "householdSize",
+                                    "numChildren", "veteranStatus", "randCESD",
+                                    "urbanicity", "age", "race4Cats", "edu4Cats",
+                                    "wealthQuarts", "region4Cats",
+                                    "jobStatus4Cats", "cancerActive", "bmi6Cats",
+                                    "smokeStatus", "insurance"), # set descriptive variables
+                           strata = "missing", # define stratifying variable
+                           data = df,
+                           factorVars = c("diabetes", "lungDis", "hrtCond",
+                                          "angina", "stroke", "arthritis",
+                                          "maritalStatus", "foodSecurity",
+                                          "gender", "veteranStatus",
+                                          "urbanicity", "race4Cats", "edu4Cats",
+                                          "wealthQuarts", "region4Cats",
+                                          "jobStatus4Cats", "cancerActive",
+                                          "bmi6Cats", "smokeStatus",
+                                          "insurance")) # define categorical variables
+print(miss_tab,
+      nonnormal = c("householdSize", "numChildren", "randCESD", "age"),
+      formatOptions = list(big.mark = ","),
+      test = TRUE)
+
+# remove missing variable from df
+df <- df %>% dplyr::select(-missing)
+
 # create new complete cases dataset with those who are missing pain data removed
 df_cc <- df %>%
   filter(is.na(painUsualSeverity) == FALSE & is.na(painDisability) == FALSE &
            is.na(painMeds) == FALSE & is.na(painOpioids) == FALSE &
            is.na(backPain) == FALSE) # 8085 - 7712 = 373 participants removed
 #                                     (4.61%)
-
 
 #--------------------------------
 # FIT LCA MODELS
